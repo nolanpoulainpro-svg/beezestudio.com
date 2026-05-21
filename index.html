@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>beezeedeepsky - NASA Shop</title>
+<title>beezeedeepsky Shop</title>
 
 <style>
-body {
+body{
 margin:0;
 font-family:Arial;
 background:black;
@@ -13,13 +13,13 @@ color:white;
 overflow-x:hidden;
 }
 
-/* 🌌 STAR BACKGROUND */
+/* 🌌 STARS FIX */
 .stars {
 position:fixed;
 width:100%;
 height:100%;
-background:transparent;
 z-index:-1;
+overflow:hidden;
 }
 
 .star {
@@ -28,23 +28,19 @@ width:2px;
 height:2px;
 background:white;
 border-radius:50%;
-animation:move 20s linear infinite;
-opacity:0.8;
+opacity:0.6;
+animation:fall linear infinite;
 }
 
-@keyframes move {
-from {transform:translateY(0);}
-to {transform:translateY(100vh);}
+@keyframes fall {
+from {transform:translateY(-10vh);}
+to {transform:translateY(110vh);}
 }
 
 /* HEADER */
 header {
 text-align:center;
 padding:30px;
-}
-
-h1 {
-font-size:50px;
 }
 
 /* SOCIAL */
@@ -59,8 +55,8 @@ padding:10px;
 background:#111;
 padding:10px 15px;
 border-radius:8px;
-text-decoration:none;
 color:white;
+text-decoration:none;
 flex:0 0 auto;
 }
 
@@ -73,16 +69,9 @@ padding:20px;
 }
 
 .card {
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(10px);
+background:#111;
 padding:15px;
-border-radius:15px;
-cursor:pointer;
-transition:0.3s;
-}
-
-.card:hover {
-transform:scale(1.03);
+border-radius:10px;
 }
 
 .card img {
@@ -90,8 +79,25 @@ width:100%;
 border-radius:10px;
 }
 
-.price {
-color:#00ffcc;
+/* ADMIN */
+.admin {
+text-align:center;
+padding:10px;
+}
+
+#adminPanel {
+display:none;
+background:#111;
+padding:10px;
+margin:10px;
+border-radius:10px;
+}
+
+input, textarea {
+width:80%;
+max-width:300px;
+padding:8px;
+margin:5px;
 }
 
 /* CART */
@@ -103,35 +109,11 @@ background:#111;
 padding:10px;
 border-radius:10px;
 width:220px;
-max-height:400px;
-overflow:auto;
 }
-
-/* PRODUCT MODAL */
-.modal {
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.8);
-display:none;
-align-items:center;
-justify-content:center;
-}
-
-.modal-content {
-background:#111;
-padding:20px;
-border-radius:10px;
-width:300px;
-}
-
 button {
-padding:8px 12px;
+padding:8px;
 background:#00ffcc;
 border:none;
-border-radius:6px;
 cursor:pointer;
 margin-top:5px;
 }
@@ -144,14 +126,12 @@ margin-top:5px;
 
 <header>
 <h1>🌌 beezeedeepsky</h1>
-<p>NASA Style Astrophotographie Shop</p>
+<p>Astrophotographie Shop</p>
 </header>
 
 <!-- SOCIAL -->
 <div class="socials">
 <a class="social" href="https://www.youtube.com/@MoonlightShutter" target="_blank">▶ YouTube</a>
-<a class="social" href="#">📸 Instagram</a>
-<a class="social" href="#">🎵 TikTok</a>
 </div>
 
 <!-- CART -->
@@ -165,77 +145,111 @@ margin-top:5px;
 </a>
 </div>
 
+<!-- ADMIN -->
+<div class="admin">
+<button onclick="login()">🔐 Admin</button>
+</div>
+
+<div id="adminPanel">
+
+<h3>Ajouter une photo</h3>
+
+<input id="name" placeholder="Nom"><br>
+<input id="price" placeholder="Prix"><br>
+<textarea id="desc" placeholder="Description"></textarea><br>
+
+<!-- 📸 UPLOAD LOCAL -->
+<input type="file" id="file"><br>
+
+<button onclick="addPhoto()">Ajouter</button>
+</div>
+
 <!-- GALLERY -->
 <div class="gallery" id="gallery"></div>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
-<div class="modal-content">
-<h3 id="mName"></h3>
-<p id="mDesc"></p>
-<p class="price" id="mPrice"></p>
-<button onclick="addCart()">🛒 Ajouter</button>
-<button onclick="closeModal()">Fermer</button>
-</div>
-</div>
-
 <script>
 
-/* 🌌 STARS */
-for(let i=0;i<80;i++){
+/* 🌌 STARS FIXED */
+for(let i=0;i<100;i++){
 let s=document.createElement("div");
 s.className="star";
 s.style.left=Math.random()*100+"%";
 s.style.top=Math.random()*100+"%";
-s.style.animationDuration=(10+Math.random()*20)+"s";
+s.style.height=(Math.random()*3+1)+"px";
+s.style.width=s.style.height;
+s.style.animationDuration=(5+Math.random()*10)+"s";
 document.getElementById("stars").appendChild(s);
 }
 
 /* DATA */
-let photos = JSON.parse(localStorage.getItem("photos")) || [
-{name:"Nébuleuse Orion",desc:"Photo HD NASA style",price:10,img:"https://via.placeholder.com/400x300"}
-];
+let photos = JSON.parse(localStorage.getItem("photos")) || [];
+let cart = [];
+let isAdmin = false;
 
-let cart=[];
-let selected=null;
+/* LOGIN */
+function login(){
+let p = prompt("Mot de passe ?");
+if(p==="astro2026"){
+isAdmin=true;
+document.getElementById("adminPanel").style.display="block";
+}
+}
+
+/* 📸 ADD PHOTO (UPLOAD LOCAL FILE) */
+function addPhoto(){
+
+let file = document.getElementById("file").files[0];
+
+if(!file) return alert("Choisis une image");
+
+let reader = new FileReader();
+
+reader.onload = function(e){
+
+photos.push({
+name:document.getElementById("name").value,
+price:parseFloat(document.getElementById("price").value),
+desc:document.getElementById("desc").value,
+img:e.target.result
+});
+
+localStorage.setItem("photos",JSON.stringify(photos));
+render();
+};
+
+reader.readAsDataURL(file);
+}
 
 /* RENDER */
 function render(){
+
 let g=document.getElementById("gallery");
 g.innerHTML="";
 
 photos.forEach((p,i)=>{
 g.innerHTML+=`
-<div class="card" onclick="openProduct(${i})">
+<div class="card">
 <img src="${p.img}">
 <h3>${p.name}</h3>
-<p class="price">${p.price}€</p>
+<p>${p.desc}</p>
+<p>💰 ${p.price}€</p>
+
+<button onclick="addCart(${i})">🛒 Ajouter</button>
 </div>
 `;
 });
+
+renderCart();
 }
 
-/* PRODUCT PAGE */
-function openProduct(i){
-selected=photos[i];
-document.getElementById("mName").innerText=selected.name;
-document.getElementById("mDesc").innerText=selected.desc;
-document.getElementById("mPrice").innerText=selected.price+"€";
-document.getElementById("modal").style.display="flex";
+/* CART FIX */
+function addCart(i){
+cart.push(photos[i]);
+renderCart();
 }
 
-function closeModal(){
-document.getElementById("modal").style.display="none";
-}
+function renderCart(){
 
-/* CART */
-function addCart(){
-cart.push(selected);
-updateCart();
-closeModal();
-}
-
-function updateCart(){
 let c=document.getElementById("cart");
 c.innerHTML="";
 let total=0;
@@ -248,9 +262,7 @@ total+=p.price;
 document.getElementById("total").innerText=total;
 }
 
-/* INIT */
 render();
-updateCart();
 
 </script>
 
