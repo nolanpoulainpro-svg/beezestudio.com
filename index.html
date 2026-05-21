@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>beezeedeepsky Shop</title>
+<title>beezeedeepsky - Astro Shop</title>
 
 <style>
 body{
@@ -13,7 +13,7 @@ color:white;
 overflow-x:hidden;
 }
 
-/* 🌌 STARS FIX */
+/* 🌌 STARS */
 .stars {
 position:fixed;
 width:100%;
@@ -28,7 +28,7 @@ width:2px;
 height:2px;
 background:white;
 border-radius:50%;
-opacity:0.6;
+opacity:0.7;
 animation:fall linear infinite;
 }
 
@@ -38,70 +38,49 @@ to {transform:translateY(110vh);}
 }
 
 /* HEADER */
-header {
+header{
 text-align:center;
 padding:30px;
 }
 
 /* SOCIAL */
-.socials {
+.socials{
 display:flex;
-overflow-x:auto;
 gap:10px;
+overflow-x:auto;
 padding:10px;
 }
 
-.social {
+.social{
 background:#111;
 padding:10px 15px;
 border-radius:8px;
-color:white;
 text-decoration:none;
+color:white;
 flex:0 0 auto;
 }
 
 /* GALLERY */
-.gallery {
+.gallery{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:20px;
 padding:20px;
 }
 
-.card {
+.card{
 background:#111;
 padding:15px;
 border-radius:10px;
 }
 
-.card img {
+.card img{
 width:100%;
 border-radius:10px;
 }
 
-/* ADMIN */
-.admin {
-text-align:center;
-padding:10px;
-}
-
-#adminPanel {
-display:none;
-background:#111;
-padding:10px;
-margin:10px;
-border-radius:10px;
-}
-
-input, textarea {
-width:80%;
-max-width:300px;
-padding:8px;
-margin:5px;
-}
-
 /* CART */
-.cart {
+.cart{
 position:fixed;
 right:10px;
 top:10px;
@@ -109,19 +88,40 @@ background:#111;
 padding:10px;
 border-radius:10px;
 width:220px;
+max-height:400px;
+overflow:auto;
 }
-button {
+
+button{
 padding:8px;
 background:#00ffcc;
 border:none;
+border-radius:6px;
 cursor:pointer;
 margin-top:5px;
+}
+
+/* ADMIN */
+#adminPanel{
+display:none;
+background:#111;
+padding:10px;
+margin:10px;
+border-radius:10px;
+}
+
+input, textarea{
+width:80%;
+max-width:300px;
+padding:8px;
+margin:5px;
 }
 </style>
 </head>
 
 <body>
 
+<!-- 🌌 STARS BACKGROUND -->
 <div class="stars" id="stars"></div>
 
 <header>
@@ -140,15 +140,13 @@ margin-top:5px;
 <div id="cart"></div>
 <p>Total : <span id="total">0</span>€</p>
 
-<a href="https://www.paypal.me/TONPAYPAL" target="_blank">
-<button>💳 PayPal</button>
+<a id="paypalLink" href="https://www.paypal.me/NolanPoulain0" target="_blank">
+<button>💳 Payer PayPal</button>
 </a>
 </div>
 
 <!-- ADMIN -->
-<div class="admin">
 <button onclick="login()">🔐 Admin</button>
-</div>
 
 <div id="adminPanel">
 
@@ -157,11 +155,10 @@ margin-top:5px;
 <input id="name" placeholder="Nom"><br>
 <input id="price" placeholder="Prix"><br>
 <textarea id="desc" placeholder="Description"></textarea><br>
-
-<!-- 📸 UPLOAD LOCAL -->
 <input type="file" id="file"><br>
 
 <button onclick="addPhoto()">Ajouter</button>
+
 </div>
 
 <!-- GALLERY -->
@@ -169,15 +166,13 @@ margin-top:5px;
 
 <script>
 
-/* 🌌 STARS FIXED */
-for(let i=0;i<100;i++){
+/* 🌌 STARS FIX */
+for(let i=0;i<120;i++){
 let s=document.createElement("div");
 s.className="star";
 s.style.left=Math.random()*100+"%";
 s.style.top=Math.random()*100+"%";
-s.style.height=(Math.random()*3+1)+"px";
-s.style.width=s.style.height;
-s.style.animationDuration=(5+Math.random()*10)+"s";
+s.style.animationDuration=(5+Math.random()*15)+"s";
 document.getElementById("stars").appendChild(s);
 }
 
@@ -188,23 +183,22 @@ let isAdmin = false;
 
 /* LOGIN */
 function login(){
-let p = prompt("Mot de passe ?");
+let p = prompt("Mot de passe admin ?");
 if(p==="astro2026"){
 isAdmin=true;
 document.getElementById("adminPanel").style.display="block";
 }
 }
 
-/* 📸 ADD PHOTO (UPLOAD LOCAL FILE) */
+/* 📸 ADD PHOTO (UPLOAD FILE) */
 function addPhoto(){
 
-let file = document.getElementById("file").files[0];
+let file=document.getElementById("file").files[0];
+if(!file) return alert("Ajoute une image");
 
-if(!file) return alert("Choisis une image");
+let reader=new FileReader();
 
-let reader = new FileReader();
-
-reader.onload = function(e){
+reader.onload=function(e){
 
 photos.push({
 name:document.getElementById("name").value,
@@ -242,7 +236,7 @@ g.innerHTML+=`
 renderCart();
 }
 
-/* CART FIX */
+/* CART */
 function addCart(i){
 cart.push(photos[i]);
 renderCart();
@@ -260,6 +254,15 @@ total+=p.price;
 });
 
 document.getElementById("total").innerText=total;
+
+/* 💳 PAYPAL UPDATE */
+updatePayPal(total);
+}
+
+/* PAYPAL LINK FIX */
+function updatePayPal(total){
+document.getElementById("paypalLink").href =
+"https://www.paypal.me/NolanPoulain0/" + total;
 }
 
 render();
