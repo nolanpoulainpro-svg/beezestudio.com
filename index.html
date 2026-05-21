@@ -2,217 +2,255 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>beezeedeepsky - Astro Shop</title>
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<title>beezeedeepsky - NASA Shop</title>
 
 <style>
 body {
-  margin:0;
-  font-family:Arial;
-  background: radial-gradient(circle at top, #0b0b1a, #000);
-  color:white;
+margin:0;
+font-family:Arial;
+background:black;
+color:white;
+overflow-x:hidden;
+}
+
+/* 🌌 STAR BACKGROUND */
+.stars {
+position:fixed;
+width:100%;
+height:100%;
+background:transparent;
+z-index:-1;
+}
+
+.star {
+position:absolute;
+width:2px;
+height:2px;
+background:white;
+border-radius:50%;
+animation:move 20s linear infinite;
+opacity:0.8;
+}
+
+@keyframes move {
+from {transform:translateY(0);}
+to {transform:translateY(100vh);}
 }
 
 /* HEADER */
 header {
-  text-align:center;
-  padding:40px;
+text-align:center;
+padding:30px;
 }
 
 h1 {
-  font-size:50px;
+font-size:50px;
 }
 
 /* SOCIAL */
 .socials {
-  display:flex;
-  overflow-x:auto;
-  gap:10px;
-  padding:10px;
+display:flex;
+overflow-x:auto;
+gap:10px;
+padding:10px;
 }
 
 .social {
-  flex:0 0 auto;
-  background:#111;
-  padding:10px 15px;
-  border-radius:8px;
-  text-decoration:none;
-  color:white;
-}
-
-/* ADMIN */
-.admin {
-  text-align:center;
-  margin:10px;
-}
-
-#adminPanel {
-  display:none;
-  text-align:center;
-  background:#111;
-  padding:20px;
-  margin:10px;
-  border-radius:10px;
-}
-
-input, textarea {
-  width:80%;
-  max-width:400px;
-  padding:8px;
-  margin:5px;
-  border-radius:8px;
-  border:none;
+background:#111;
+padding:10px 15px;
+border-radius:8px;
+text-decoration:none;
+color:white;
+flex:0 0 auto;
 }
 
 /* GALLERY */
 .gallery {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:20px;
-  padding:30px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:20px;
 }
 
 .card {
-  background:#111;
-  padding:15px;
-  border-radius:10px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+padding:15px;
+border-radius:15px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.card:hover {
+transform:scale(1.03);
 }
 
 .card img {
-  width:100%;
-  border-radius:10px;
+width:100%;
+border-radius:10px;
 }
 
 .price {
-  color:#00ffcc;
-  font-weight:bold;
+color:#00ffcc;
+}
+
+/* CART */
+.cart {
+position:fixed;
+right:10px;
+top:10px;
+background:#111;
+padding:10px;
+border-radius:10px;
+width:220px;
+max-height:400px;
+overflow:auto;
+}
+
+/* PRODUCT MODAL */
+.modal {
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-content {
+background:#111;
+padding:20px;
+border-radius:10px;
+width:300px;
 }
 
 button {
-  padding:8px 12px;
-  margin-top:5px;
-  background:#00ffcc;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
+padding:8px 12px;
+background:#00ffcc;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
+<div class="stars" id="stars"></div>
+
 <header>
 <h1>🌌 beezeedeepsky</h1>
-<p>Astrophotographie - vente de photos d’univers</p>
+<p>NASA Style Astrophotographie Shop</p>
 </header>
 
-<!-- SOCIALS -->
+<!-- SOCIAL -->
 <div class="socials">
 <a class="social" href="https://www.youtube.com/@MoonlightShutter" target="_blank">▶ YouTube</a>
 <a class="social" href="#">📸 Instagram</a>
 <a class="social" href="#">🎵 TikTok</a>
 </div>
 
-<!-- ADMIN BUTTON -->
-<div class="admin">
-<button onclick="login()">🔐 Mode Admin</button>
-</div>
+<!-- CART -->
+<div class="cart">
+<h3>🛒 Panier</h3>
+<div id="cart"></div>
+<p>Total : <span id="total">0</span>€</p>
 
-<!-- ADMIN PANEL -->
-<div id="adminPanel">
-<h3>Ajouter une photo</h3>
-
-<input id="name" placeholder="Nom"><br>
-<input id="price" placeholder="Prix"><br>
-<textarea id="desc" placeholder="Description"></textarea><br>
-<input id="img" placeholder="URL image"><br>
-
-<button onclick="addProduct()">Ajouter</button>
+<a href="https://www.paypal.me/TONPAYPAL" target="_blank">
+<button>💳 PayPal</button>
+</a>
 </div>
 
 <!-- GALLERY -->
 <div class="gallery" id="gallery"></div>
 
-<!-- CONTACT -->
-<section style="text-align:center; padding:40px; background:#0a0a0a;">
-<h2>📩 Contact</h2>
-
-<form action="https://formspree.io/f/mwkgbqyz" method="POST">
-<input name="name" placeholder="Nom" required><br>
-<input name="email" placeholder="Email" required><br>
-<textarea name="message" placeholder="Message" required></textarea><br>
-<button type="submit">Envoyer</button>
-</form>
-
-<p>📧 nolanpoulainpro@gmail.com</p>
-</section>
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modal-content">
+<h3 id="mName"></h3>
+<p id="mDesc"></p>
+<p class="price" id="mPrice"></p>
+<button onclick="addCart()">🛒 Ajouter</button>
+<button onclick="closeModal()">Fermer</button>
+</div>
+</div>
 
 <script>
 
-/* 🔥 FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyCRRoKAH05jvqlGVgWloPTaOY8XdvX4dqA",
-  authDomain: "beezeedeepsky-shop.firebaseapp.com",
-  projectId: "beezeedeepsky-shop",
-  storageBucket: "beezeedeepsky-shop.firebasestorage.app",
-  messagingSenderId: "705714367098",
-  appId: "1:705714367098:web:8053abb7dc04109e40e9c3"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-let isAdmin = false;
-
-/* 🔐 LOGIN ADMIN */
-function login() {
-  const pass = prompt("Mot de passe admin ?");
-  if(pass === "astro2026") {
-    isAdmin = true;
-    document.getElementById("adminPanel").style.display = "block";
-    alert("Mode admin activé");
-  } else {
-    alert("Incorrect");
-  }
+/* 🌌 STARS */
+for(let i=0;i<80;i++){
+let s=document.createElement("div");
+s.className="star";
+s.style.left=Math.random()*100+"%";
+s.style.top=Math.random()*100+"%";
+s.style.animationDuration=(10+Math.random()*20)+"s";
+document.getElementById("stars").appendChild(s);
 }
 
-/* ➕ AJOUT PRODUIT */
-function addProduct() {
-  db.collection("photos").add({
-    name: document.getElementById("name").value,
-    price: document.getElementById("price").value,
-    desc: document.getElementById("desc").value,
-    img: document.getElementById("img").value
-  });
+/* DATA */
+let photos = JSON.parse(localStorage.getItem("photos")) || [
+{name:"Nébuleuse Orion",desc:"Photo HD NASA style",price:10,img:"https://via.placeholder.com/400x300"}
+];
 
-  alert("Photo ajoutée !");
-}
+let cart=[];
+let selected=null;
 
-/* 📸 AFFICHAGE AUTOMATIQUE */
-db.collection("photos").onSnapshot((snap) => {
-  let html = "";
+/* RENDER */
+function render(){
+let g=document.getElementById("gallery");
+g.innerHTML="";
 
-  snap.forEach(doc => {
-    let p = doc.data();
-
-    html += `
-      <div class="card">
-        <img src="${p.img}">
-        <h3>${p.name}</h3>
-        <p>${p.desc}</p>
-        <p class="price">${p.price}</p>
-
-        <button onclick="alert('Paiement à connecter')">💰 Acheter</button>
-      </div>
-    `;
-  });
-
-  document.getElementById("gallery").innerHTML = html;
+photos.forEach((p,i)=>{
+g.innerHTML+=`
+<div class="card" onclick="openProduct(${i})">
+<img src="${p.img}">
+<h3>${p.name}</h3>
+<p class="price">${p.price}€</p>
+</div>
+`;
 });
+}
+
+/* PRODUCT PAGE */
+function openProduct(i){
+selected=photos[i];
+document.getElementById("mName").innerText=selected.name;
+document.getElementById("mDesc").innerText=selected.desc;
+document.getElementById("mPrice").innerText=selected.price+"€";
+document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none";
+}
+
+/* CART */
+function addCart(){
+cart.push(selected);
+updateCart();
+closeModal();
+}
+
+function updateCart(){
+let c=document.getElementById("cart");
+c.innerHTML="";
+let total=0;
+
+cart.forEach(p=>{
+c.innerHTML+=`<p>${p.name} - ${p.price}€</p>`;
+total+=p.price;
+});
+
+document.getElementById("total").innerText=total;
+}
+
+/* INIT */
+render();
+updateCart();
 
 </script>
 
