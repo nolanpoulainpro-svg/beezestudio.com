@@ -1,171 +1,197 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>beezeedeepsky - Astrophotographie</title>
+<meta charset="UTF-8">
+<title>beezeedeepsky - Pro Astro</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: radial-gradient(circle at top, #0b0b1a, #000);
-      color: white;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: radial-gradient(circle at top, #0b0b1a, #000);
+  color: white;
+}
 
-    header {
-      text-align: center;
-      padding: 50px 20px;
-    }
+/* HEADER */
+header {
+  text-align: center;
+  padding: 40px;
+}
 
-    h1 {
-      font-size: 50px;
-      margin: 0;
-    }
+h1 {
+  font-size: 50px;
+}
 
-    p {
-      color: #cccccc;
-    }
+/* SOCIAL */
+.socials {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding: 10px;
+}
 
-    /* 🌐 Réseaux sociaux */
-    .socials {
-      display: flex;
-      overflow-x: auto;
-      gap: 15px;
-      padding: 20px;
-      white-space: nowrap;
-    }
+.social {
+  flex: 0 0 auto;
+  background: #111;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: white;
+}
 
-    .social {
-      flex: 0 0 auto;
-      background: #111;
-      padding: 15px 25px;
-      border-radius: 10px;
-      text-decoration: none;
-      color: white;
-      font-weight: bold;
-      border: 1px solid #333;
-    }
+/* GALLERY */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 30px;
+}
 
-    .social:hover {
-      background: #222;
-    }
+.card {
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+}
 
-    /* 📸 Galerie */
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 40px;
-    }
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
 
-    .card {
-      background: #111;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 0 10px rgba(255,255,255,0.05);
-    }
+.price {
+  color: #00ffcc;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .card img {
-      width: 100%;
-      border-radius: 10px;
-    }
+/* CONTACT */
+.contact {
+  text-align: center;
+  padding: 40px;
+  background: #0a0a0a;
+}
 
-    .price {
-      color: #00ffcc;
-      font-weight: bold;
-      margin-top: 10px;
-    }
+input, textarea {
+  width: 80%;
+  max-width: 400px;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 8px;
+}
 
-    /* 📩 Contact */
-    .contact {
-      background: #0a0a0a;
-      padding: 40px;
-      text-align: center;
-    }
+/* ADMIN */
+.admin-panel {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  background: #111;
+}
 
-    input, textarea {
-      width: 80%;
-      max-width: 400px;
-      margin: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-    }
-
-    button {
-      padding: 10px 20px;
-      background: #00ffcc;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 12px;
-      color: #666;
-    }
-  </style>
+button {
+  padding: 10px 15px;
+  background: #00ffcc;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <h1>🌌 beezeedeepsky</h1>
-  <p>Astrophotographie : nébuleuses, étoiles, planètes et comètes</p>
+<h1>🌌 beezeedeepsky</h1>
+<p>Astrophotographie professionnelle</p>
 </header>
 
-<!-- 🌐 Réseaux sociaux -->
+<!-- SOCIAL -->
 <div class="socials">
-  <a class="social" href="https://youtube.com" target="_blank">▶ YouTube</a>
-  <a class="social" href="https://tiktok.com" target="_blank">🎵 TikTok</a>
-  <a class="social" href="https://instagram.com" target="_blank">📸 Instagram</a>
+<a class="social" href="https://www.youtube.com/@MoonlightShutter">▶ YouTube</a>
+<a class="social" href="#">📸 Instagram</a>
+<a class="social" href="#">🎵 TikTok</a>
 </div>
 
-<!-- 📸 Galerie -->
+<!-- ADMIN LOGIN -->
+<div style="text-align:center; margin:10px;">
+<button onclick="loginAdmin()">🔐 Mode Admin</button>
+</div>
+
+<div class="admin-panel" id="adminPanel">
+<p>Mode admin activé ✔</p>
+<p>👉 Clique sur un prix pour le modifier</p>
+</div>
+
+<!-- GALLERY -->
 <section class="gallery">
 
-  <div class="card">
-    <img src="https://via.placeholder.com/400x300">
-    <h3>Nébuleuse Orion</h3>
-    <p>Photo HD de la nébuleuse d’Orion capturée avec longue exposition.</p>
-    <p class="price">10€</p>
-  </div>
+<div class="card">
+<img src="https://via.placeholder.com/400x300">
+<h3>Nébuleuse Orion</h3>
+<p>Photo longue exposition</p>
+<p>Prix : <span class="price" onclick="editPrice(this)">10€</span></p>
+</div>
 
-  <div class="card">
-    <img src="https://via.placeholder.com/400x300">
-    <h3>Jupiter</h3>
-    <p>Planète Jupiter avec ses bandes et satellites visibles.</p>
-    <p class="price">8€</p>
-  </div>
-
-  <div class="card">
-    <img src="https://via.placeholder.com/400x300">
-    <h3>Comète C/2024</h3>
-    <p>Comète lumineuse traversant le ciel nocturne.</p>
-    <p class="price">12€</p>
-  </div>
+<div class="card">
+<img src="https://via.placeholder.com/400x300">
+<h3>Jupiter</h3>
+<p>Détails atmosphériques</p>
+<p>Prix : <span class="price" onclick="editPrice(this)">8€</span></p>
+</div>
 
 </section>
 
-<!-- 📩 Contact -->
+<!-- CONTACT -->
 <section class="contact">
-  <h2>📩 Me contacter</h2>
-  <p>Envoie-moi un message pour acheter une photo ou une commande personnalisée.</p>
 
-  <form>
-    <input type="text" placeholder="Ton nom"><br>
-    <input type="email" placeholder="Ton email"><br>
-    <textarea rows="4" placeholder="Ton message"></textarea><br>
-    <button type="submit">Envoyer</button>
-  </form>
+<h2>📩 Contact pro</h2>
+
+<form action="https://formspree.io/f/mwkgbqyz" method="POST">
+<input name="name" placeholder="Nom" required><br>
+<input name="email" placeholder="Email" required><br>
+<textarea name="message" placeholder="Message" required></textarea><br>
+<button>Envoyer</button>
+</form>
+
+<p>📧 nolanpoulainpro@gmail.com</p>
+
 </section>
 
-<footer>
-  © 2026 beezeedeepsky - Tous droits réservés
+<footer style="text-align:center; padding:20px; color:#666;">
+© 2026 beezeedeepsky
 </footer>
+
+<script>
+
+// 🔐 MOT DE PASSE ADMIN
+const ADMIN_PASSWORD = "astro2026";
+let isAdmin = false;
+
+function loginAdmin() {
+  const pass = prompt("Mot de passe admin ?");
+  if(pass === ADMIN_PASSWORD) {
+    isAdmin = true;
+    document.getElementById("adminPanel").style.display = "block";
+    alert("Mode admin activé !");
+  } else {
+    alert("Mot de passe incorrect");
+  }
+}
+
+// 💰 EDIT PRIX
+function editPrice(el) {
+  if(!isAdmin) {
+    alert("Active le mode admin d'abord !");
+    return;
+  }
+
+  let newPrice = prompt("Nouveau prix ?");
+  if(newPrice) {
+    el.innerText = newPrice;
+    localStorage.setItem("price_" + el.innerText, newPrice);
+  }
+}
+
+</script>
 
 </body>
 </html>
