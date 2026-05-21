@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>beezeedeepsky Astro Shop</title>
+<title>beezeedeepsky - Astro Shop</title>
 
 <style>
 body{
@@ -79,15 +79,6 @@ width:100%;
 border-radius:10px;
 }
 
-button{
-padding:8px;
-background:#00ffcc;
-border:none;
-border-radius:6px;
-cursor:pointer;
-margin-top:5px;
-}
-
 /* CART */
 .cart{
 position:fixed;
@@ -99,6 +90,15 @@ border-radius:10px;
 width:240px;
 max-height:400px;
 overflow:auto;
+}
+
+button{
+padding:8px;
+background:#00ffcc;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
 }
 
 /* ADMIN */
@@ -205,7 +205,7 @@ let reader=new FileReader();
 reader.onload=function(e){
 
 photos.push({
-id:Date.now(),
+id:crypto.randomUUID(),
 name:document.getElementById("name").value,
 price:parseFloat(document.getElementById("price").value),
 desc:document.getElementById("desc").value,
@@ -224,7 +224,7 @@ function save(){
 localStorage.setItem("photos",JSON.stringify(photos));
 }
 
-/* DELETE PHOTO (ADMIN) */
+/* 🗑 DELETE PHOTO (FIXED) */
 function deletePhoto(id){
 photos = photos.filter(p => p.id !== id);
 save();
@@ -239,18 +239,29 @@ g.innerHTML="";
 
 photos.forEach(p=>{
 
-g.innerHTML+=`
-<div class="card">
+let card=document.createElement("div");
+card.className="card";
+
+card.innerHTML=`
 <img src="${p.img}">
 <h3>${p.name}</h3>
 <p>${p.desc}</p>
 <p>💰 ${p.price}€</p>
-
-<button onclick="addCart(${p.id})">🛒 Ajouter</button>
-
-${isAdmin ? `<button onclick="deletePhoto(${p.id})">❌ Supprimer</button>` : ""}
-</div>
+<button class="addBtn">🛒 Ajouter</button>
 `;
+
+card.querySelector(".addBtn").onclick=()=>addCart(p.id);
+
+/* ADMIN DELETE */
+if(isAdmin){
+let del=document.createElement("button");
+del.innerText="❌ Supprimer";
+del.onclick=()=>deletePhoto(p.id);
+card.appendChild(del);
+}
+
+g.appendChild(card);
+
 });
 
 renderCart();
@@ -258,18 +269,18 @@ renderCart();
 
 /* CART ADD */
 function addCart(id){
-let item = photos.find(p=>p.id===id);
+let item=photos.find(p=>p.id===id);
 cart.push(item);
 renderCart();
 }
 
-/* REMOVE ITEM */
-function removeItem(index){
-cart.splice(index,1);
+/* REMOVE CART ITEM */
+function removeItem(i){
+cart.splice(i,1);
 renderCart();
 }
 
-/* CLEAR */
+/* CLEAR CART */
 function clearCart(){
 cart=[];
 renderCart();
@@ -293,11 +304,12 @@ total+=p.price;
 
 document.getElementById("total").innerText=total;
 
-/* PAYPAL */
+/* PAYPAL UPDATE */
 document.getElementById("paypalLink").href =
 "https://www.paypal.me/NolanPoulain0/" + total;
 }
 
+/* INIT */
 render();
 
 </script>
