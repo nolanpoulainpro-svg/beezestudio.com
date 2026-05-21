@@ -2,38 +2,170 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>beezeedeepsky</title>
+  <title>beezeedeepsky - Astrophotographie</title>
+
   <style>
     body {
       margin: 0;
-      background: black;
-      color: white;
       font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #0b0b1a, #000);
+      color: white;
+    }
+
+    header {
       text-align: center;
+      padding: 50px 20px;
     }
 
     h1 {
-      margin-top: 100px;
       font-size: 50px;
+      margin: 0;
     }
 
     p {
-      font-size: 20px;
       color: #cccccc;
     }
 
-    .box {
-      margin-top: 40px;
+    /* 🌐 Réseaux sociaux */
+    .socials {
+      display: flex;
+      overflow-x: auto;
+      gap: 15px;
+      padding: 20px;
+      white-space: nowrap;
+    }
+
+    .social {
+      flex: 0 0 auto;
+      background: #111;
+      padding: 15px 25px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      border: 1px solid #333;
+    }
+
+    .social:hover {
+      background: #222;
+    }
+
+    /* 📸 Galerie */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 40px;
+    }
+
+    .card {
+      background: #111;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.05);
+    }
+
+    .card img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .price {
+      color: #00ffcc;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    /* 📩 Contact */
+    .contact {
+      background: #0a0a0a;
+      padding: 40px;
+      text-align: center;
+    }
+
+    input, textarea {
+      width: 80%;
+      max-width: 400px;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #00ffcc;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      color: #666;
     }
   </style>
 </head>
 
 <body>
+
+<header>
   <h1>🌌 beezeedeepsky</h1>
   <p>Astrophotographie : nébuleuses, étoiles, planètes et comètes</p>
+</header>
 
-  <div class="box">
-    <p>Bienvenue dans mon univers spatial ✨</p>
+<!-- 🌐 Réseaux sociaux -->
+<div class="socials">
+  <a class="social" href="https://youtube.com" target="_blank">▶ YouTube</a>
+  <a class="social" href="https://tiktok.com" target="_blank">🎵 TikTok</a>
+  <a class="social" href="https://instagram.com" target="_blank">📸 Instagram</a>
+</div>
+
+<!-- 📸 Galerie -->
+<section class="gallery">
+
+  <div class="card">
+    <img src="https://via.placeholder.com/400x300">
+    <h3>Nébuleuse Orion</h3>
+    <p>Photo HD de la nébuleuse d’Orion capturée avec longue exposition.</p>
+    <p class="price">10€</p>
   </div>
+
+  <div class="card">
+    <img src="https://via.placeholder.com/400x300">
+    <h3>Jupiter</h3>
+    <p>Planète Jupiter avec ses bandes et satellites visibles.</p>
+    <p class="price">8€</p>
+  </div>
+
+  <div class="card">
+    <img src="https://via.placeholder.com/400x300">
+    <h3>Comète C/2024</h3>
+    <p>Comète lumineuse traversant le ciel nocturne.</p>
+    <p class="price">12€</p>
+  </div>
+
+</section>
+
+<!-- 📩 Contact -->
+<section class="contact">
+  <h2>📩 Me contacter</h2>
+  <p>Envoie-moi un message pour acheter une photo ou une commande personnalisée.</p>
+
+  <form>
+    <input type="text" placeholder="Ton nom"><br>
+    <input type="email" placeholder="Ton email"><br>
+    <textarea rows="4" placeholder="Ton message"></textarea><br>
+    <button type="submit">Envoyer</button>
+  </form>
+</section>
+
+<footer>
+  © 2026 beezeedeepsky - Tous droits réservés
+</footer>
+
 </body>
 </html>
