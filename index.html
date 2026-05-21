@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>beezeedeepsky - Astro Shop</title>
+<title>beezeedeepsky Astro Shop</title>
 
 <style>
 body{
@@ -38,10 +38,7 @@ to{transform:translateY(110vh);}
 }
 
 /* HEADER */
-header{
-text-align:center;
-padding:30px;
-}
+header{text-align:center;padding:30px;}
 
 /* SOCIAL */
 .socials{
@@ -57,7 +54,6 @@ padding:10px 15px;
 border-radius:8px;
 color:white;
 text-decoration:none;
-flex:0 0 auto;
 }
 
 /* GALLERY */
@@ -79,6 +75,15 @@ width:100%;
 border-radius:10px;
 }
 
+button{
+padding:8px;
+background:#00ffcc;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
+}
+
 /* CART */
 .cart{
 position:fixed;
@@ -92,15 +97,6 @@ max-height:400px;
 overflow:auto;
 }
 
-button{
-padding:8px;
-background:#00ffcc;
-border:none;
-border-radius:6px;
-cursor:pointer;
-margin-top:5px;
-}
-
 /* ADMIN */
 #adminPanel{
 display:none;
@@ -112,7 +108,6 @@ border-radius:10px;
 
 input,textarea{
 width:80%;
-max-width:300px;
 padding:8px;
 margin:5px;
 }
@@ -121,7 +116,6 @@ margin:5px;
 
 <body>
 
-<!-- 🌌 STARS -->
 <div class="stars" id="stars"></div>
 
 <header>
@@ -137,12 +131,10 @@ margin:5px;
 <!-- CART -->
 <div class="cart">
 <h3>🛒 Panier</h3>
-
 <div id="cart"></div>
-
 <p>Total : <span id="total">0</span>€</p>
 
-<button onclick="clearCart()">🗑 Vider panier</button>
+<button id="clearCart">🗑 Vider panier</button>
 
 <a id="paypalLink" href="https://www.paypal.me/NolanPoulain0" target="_blank">
 <button>💳 PayPal</button>
@@ -150,7 +142,7 @@ margin:5px;
 </div>
 
 <!-- ADMIN -->
-<button onclick="login()">🔐 Admin</button>
+<button id="adminBtn">🔐 Admin</button>
 
 <div id="adminPanel">
 
@@ -161,11 +153,10 @@ margin:5px;
 <textarea id="desc" placeholder="Description"></textarea><br>
 <input type="file" id="file"><br>
 
-<button onclick="addPhoto()">Ajouter</button>
+<button id="addPhotoBtn">Ajouter</button>
 
 </div>
 
-<!-- GALLERY -->
 <div class="gallery" id="gallery"></div>
 
 <script>
@@ -185,17 +176,18 @@ let photos = JSON.parse(localStorage.getItem("photos")) || [];
 let cart = [];
 let isAdmin = false;
 
-/* LOGIN */
-function login(){
+/* ADMIN LOGIN */
+document.getElementById("adminBtn").addEventListener("click",()=>{
 let p = prompt("Mot de passe ?");
 if(p==="astro2026"){
 isAdmin=true;
 document.getElementById("adminPanel").style.display="block";
+render();
 }
-}
+});
 
 /* ADD PHOTO */
-function addPhoto(){
+document.getElementById("addPhotoBtn").addEventListener("click",()=>{
 
 let file=document.getElementById("file").files[0];
 if(!file) return alert("Ajoute une image");
@@ -217,19 +209,38 @@ render();
 };
 
 reader.readAsDataURL(file);
-}
+});
 
 /* SAVE */
 function save(){
 localStorage.setItem("photos",JSON.stringify(photos));
 }
 
-/* 🗑 DELETE PHOTO (FIXED) */
+/* 🗑 DELETE PHOTO (100% FIXED) */
 function deletePhoto(id){
 photos = photos.filter(p => p.id !== id);
 save();
 render();
 }
+
+/* ADD CART */
+function addCart(id){
+let item = photos.find(p=>p.id===id);
+cart.push(item);
+renderCart();
+}
+
+/* REMOVE CART */
+function removeCart(index){
+cart.splice(index,1);
+renderCart();
+}
+
+/* CLEAR CART */
+document.getElementById("clearCart").addEventListener("click",()=>{
+cart=[];
+renderCart();
+});
 
 /* RENDER */
 function render(){
@@ -247,46 +258,26 @@ card.innerHTML=`
 <h3>${p.name}</h3>
 <p>${p.desc}</p>
 <p>💰 ${p.price}€</p>
-<button class="addBtn">🛒 Ajouter</button>
+<button class="add">🛒 Ajouter</button>
 `;
 
-card.querySelector(".addBtn").onclick=()=>addCart(p.id);
+card.querySelector(".add").addEventListener("click",()=>addCart(p.id));
 
-/* ADMIN DELETE */
+/* 🔐 ADMIN DELETE BUTTON (FIXED) */
 if(isAdmin){
 let del=document.createElement("button");
-del.innerText="❌ Supprimer";
-del.onclick=()=>deletePhoto(p.id);
+del.textContent="❌ Supprimer";
+del.addEventListener("click",()=>deletePhoto(p.id));
 card.appendChild(del);
 }
 
 g.appendChild(card);
-
 });
 
 renderCart();
 }
 
-/* CART ADD */
-function addCart(id){
-let item=photos.find(p=>p.id===id);
-cart.push(item);
-renderCart();
-}
-
-/* REMOVE CART ITEM */
-function removeItem(i){
-cart.splice(i,1);
-renderCart();
-}
-
-/* CLEAR CART */
-function clearCart(){
-cart=[];
-renderCart();
-}
-
-/* CART RENDER */
+/* CART */
 function renderCart(){
 
 let c=document.getElementById("cart");
@@ -296,7 +287,7 @@ let total=0;
 cart.forEach((p,i)=>{
 c.innerHTML+=`
 <p>${p.name} - ${p.price}€
-<button onclick="removeItem(${i})">❌</button>
+<button onclick="removeCart(${i})">❌</button>
 </p>
 `;
 total+=p.price;
@@ -304,7 +295,7 @@ total+=p.price;
 
 document.getElementById("total").innerText=total;
 
-/* PAYPAL UPDATE */
+/* PAYPAL */
 document.getElementById("paypalLink").href =
 "https://www.paypal.me/NolanPoulain0/" + total;
 }
