@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>beezeedeepsky - Astro Shop</title>
+<title>beezeedeepsky Astro Shop</title>
 
 <style>
 body{
@@ -46,8 +46,8 @@ padding:30px;
 /* SOCIAL */
 .socials{
 display:flex;
-overflow-x:auto;
 gap:10px;
+overflow-x:auto;
 padding:10px;
 }
 
@@ -55,8 +55,8 @@ padding:10px;
 background:#111;
 padding:10px 15px;
 border-radius:8px;
-text-decoration:none;
 color:white;
+text-decoration:none;
 flex:0 0 auto;
 }
 
@@ -79,6 +79,15 @@ width:100%;
 border-radius:10px;
 }
 
+button{
+padding:8px;
+background:#00ffcc;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin-top:5px;
+}
+
 /* CART */
 .cart{
 position:fixed;
@@ -87,18 +96,9 @@ top:10px;
 background:#111;
 padding:10px;
 border-radius:10px;
-width:230px;
+width:240px;
 max-height:400px;
 overflow:auto;
-}
-
-button{
-padding:8px;
-background:#00ffcc;
-border:none;
-border-radius:6px;
-cursor:pointer;
-margin-top:5px;
 }
 
 /* ADMIN */
@@ -110,7 +110,7 @@ margin:10px;
 border-radius:10px;
 }
 
-input, textarea{
+input,textarea{
 width:80%;
 max-width:300px;
 padding:8px;
@@ -145,7 +145,7 @@ margin:5px;
 <button onclick="clearCart()">🗑 Vider panier</button>
 
 <a id="paypalLink" href="https://www.paypal.me/NolanPoulain0" target="_blank">
-<button>💳 Payer PayPal</button>
+<button>💳 PayPal</button>
 </a>
 </div>
 
@@ -167,18 +167,6 @@ margin:5px;
 
 <!-- GALLERY -->
 <div class="gallery" id="gallery"></div>
-
-<!-- CONTACT -->
-<section style="text-align:center;padding:40px;background:#0a0a0a;">
-<h2>📩 Contact</h2>
-
-<form action="mailto:nolanpoulainpro@gmail.com" method="POST" enctype="text/plain">
-<input name="name" placeholder="Nom"><br>
-<input name="email" placeholder="Email"><br>
-<textarea name="message" placeholder="Message"></textarea><br>
-<button type="submit">Envoyer</button>
-</form>
-</section>
 
 <script>
 
@@ -210,24 +198,37 @@ document.getElementById("adminPanel").style.display="block";
 function addPhoto(){
 
 let file=document.getElementById("file").files[0];
-if(!file) return alert("Choisis une image");
+if(!file) return alert("Ajoute une image");
 
 let reader=new FileReader();
 
 reader.onload=function(e){
 
 photos.push({
+id:Date.now(),
 name:document.getElementById("name").value,
 price:parseFloat(document.getElementById("price").value),
 desc:document.getElementById("desc").value,
 img:e.target.result
 });
 
-localStorage.setItem("photos",JSON.stringify(photos));
+save();
 render();
 };
 
 reader.readAsDataURL(file);
+}
+
+/* SAVE */
+function save(){
+localStorage.setItem("photos",JSON.stringify(photos));
+}
+
+/* DELETE PHOTO (ADMIN) */
+function deletePhoto(id){
+photos = photos.filter(p => p.id !== id);
+save();
+render();
 }
 
 /* RENDER */
@@ -236,7 +237,8 @@ function render(){
 let g=document.getElementById("gallery");
 g.innerHTML="";
 
-photos.forEach((p,i)=>{
+photos.forEach(p=>{
+
 g.innerHTML+=`
 <div class="card">
 <img src="${p.img}">
@@ -244,7 +246,9 @@ g.innerHTML+=`
 <p>${p.desc}</p>
 <p>💰 ${p.price}€</p>
 
-<button onclick="addCart(${i})">🛒 Ajouter</button>
+<button onclick="addCart(${p.id})">🛒 Ajouter</button>
+
+${isAdmin ? `<button onclick="deletePhoto(${p.id})">❌ Supprimer</button>` : ""}
 </div>
 `;
 });
@@ -252,25 +256,26 @@ g.innerHTML+=`
 renderCart();
 }
 
-/* 🛒 CART ADD */
-function addCart(i){
-cart.push(photos[i]);
+/* CART ADD */
+function addCart(id){
+let item = photos.find(p=>p.id===id);
+cart.push(item);
 renderCart();
 }
 
-/* ❌ REMOVE ITEM */
-function removeItem(i){
-cart.splice(i,1);
+/* REMOVE ITEM */
+function removeItem(index){
+cart.splice(index,1);
 renderCart();
 }
 
-/* 🗑 CLEAR CART */
+/* CLEAR */
 function clearCart(){
 cart=[];
 renderCart();
 }
 
-/* CART DISPLAY */
+/* CART RENDER */
 function renderCart(){
 
 let c=document.getElementById("cart");
@@ -288,7 +293,7 @@ total+=p.price;
 
 document.getElementById("total").innerText=total;
 
-/* PAYPAL UPDATE */
+/* PAYPAL */
 document.getElementById("paypalLink").href =
 "https://www.paypal.me/NolanPoulain0/" + total;
 }
