@@ -2,97 +2,82 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>beezeedeepsky - Pro Astro</title>
+<title>beezeedeepsky - Astro Shop</title>
 
 <style>
 body {
-  margin: 0;
-  font-family: Arial;
+  margin:0;
+  font-family:Arial;
   background: radial-gradient(circle at top, #0b0b1a, #000);
-  color: white;
+  color:white;
 }
 
-/* HEADER */
 header {
-  text-align: center;
-  padding: 40px;
+  text-align:center;
+  padding:40px;
 }
 
-h1 {
-  font-size: 50px;
-}
+h1 { font-size:50px; }
 
-/* SOCIAL */
 .socials {
-  display: flex;
-  overflow-x: auto;
-  gap: 10px;
-  padding: 10px;
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+  padding:10px;
 }
 
 .social {
-  flex: 0 0 auto;
-  background: #111;
-  padding: 10px 15px;
-  border-radius: 8px;
-  text-decoration: none;
-  color: white;
+  background:#111;
+  padding:10px 15px;
+  border-radius:8px;
+  color:white;
+  text-decoration:none;
+  flex:0 0 auto;
 }
 
-/* GALLERY */
 .gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 30px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+  padding:30px;
 }
 
 .card {
-  background: #111;
-  padding: 15px;
-  border-radius: 10px;
+  background:#111;
+  padding:15px;
+  border-radius:10px;
 }
 
 .card img {
-  width: 100%;
-  border-radius: 10px;
+  width:100%;
+  border-radius:10px;
 }
 
 .price {
-  color: #00ffcc;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* CONTACT */
-.contact {
-  text-align: center;
-  padding: 40px;
-  background: #0a0a0a;
-}
-
-input, textarea {
-  width: 80%;
-  max-width: 400px;
-  margin: 5px;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-/* ADMIN */
-.admin-panel {
-  display: none;
-  text-align: center;
-  padding: 20px;
-  background: #111;
+  color:#00ffcc;
+  font-weight:bold;
 }
 
 button {
-  padding: 10px 15px;
-  background: #00ffcc;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
+  padding:8px 12px;
+  margin:5px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.adminPanel {
+  display:none;
+  background:#111;
+  padding:20px;
+  text-align:center;
+}
+
+input, textarea {
+  padding:8px;
+  margin:5px;
+  width:80%;
+  max-width:400px;
 }
 </style>
 </head>
@@ -101,49 +86,39 @@ button {
 
 <header>
 <h1>🌌 beezeedeepsky</h1>
-<p>Astrophotographie professionnelle</p>
+<p>Astrophotographie - vente de photos d’espace</p>
 </header>
 
-<!-- SOCIAL -->
+<!-- RÉSEAUX -->
 <div class="socials">
-<a class="social" href="https://www.youtube.com/@MoonlightShutter">▶ YouTube</a>
+<a class="social" href="https://www.youtube.com/@MoonlightShutter" target="_blank">▶ YouTube</a>
 <a class="social" href="#">📸 Instagram</a>
 <a class="social" href="#">🎵 TikTok</a>
 </div>
 
-<!-- ADMIN LOGIN -->
-<div style="text-align:center; margin:10px;">
-<button onclick="loginAdmin()">🔐 Mode Admin</button>
+<!-- ADMIN -->
+<div style="text-align:center;">
+<button onclick="login()">🔐 Admin</button>
 </div>
 
-<div class="admin-panel" id="adminPanel">
-<p>Mode admin activé ✔</p>
-<p>👉 Clique sur un prix pour le modifier</p>
+<div class="adminPanel" id="adminPanel">
+
+<h3>Mode Admin</h3>
+
+<input id="name" placeholder="Nom photo"><br>
+<input id="img" placeholder="URL image"><br>
+<input id="price" placeholder="Prix"><br>
+<textarea id="desc" placeholder="Description"></textarea><br>
+
+<button onclick="addPhoto()">Ajouter photo</button>
 </div>
 
 <!-- GALLERY -->
-<section class="gallery">
-
-<div class="card">
-<img src="https://via.placeholder.com/400x300">
-<h3>Nébuleuse Orion</h3>
-<p>Photo longue exposition</p>
-<p>Prix : <span class="price" onclick="editPrice(this)">10€</span></p>
-</div>
-
-<div class="card">
-<img src="https://via.placeholder.com/400x300">
-<h3>Jupiter</h3>
-<p>Détails atmosphériques</p>
-<p>Prix : <span class="price" onclick="editPrice(this)">8€</span></p>
-</div>
-
-</section>
+<section class="gallery" id="gallery"></section>
 
 <!-- CONTACT -->
-<section class="contact">
-
-<h2>📩 Contact pro</h2>
+<section style="text-align:center; padding:30px; background:#0a0a0a;">
+<h2>📩 Contact</h2>
 
 <form action="https://formspree.io/f/mwkgbqyz" method="POST">
 <input name="name" placeholder="Nom" required><br>
@@ -153,43 +128,73 @@ button {
 </form>
 
 <p>📧 nolanpoulainpro@gmail.com</p>
-
 </section>
-
-<footer style="text-align:center; padding:20px; color:#666;">
-© 2026 beezeedeepsky
-</footer>
 
 <script>
 
-// 🔐 MOT DE PASSE ADMIN
-const ADMIN_PASSWORD = "astro2026";
+const ADMIN_PASS = "astro2026";
 let isAdmin = false;
 
-function loginAdmin() {
-  const pass = prompt("Mot de passe admin ?");
-  if(pass === ADMIN_PASSWORD) {
+let photos = JSON.parse(localStorage.getItem("photos")) || [
+  {
+    name:"Nébuleuse Orion",
+    img:"https://via.placeholder.com/400x300",
+    price:"10€",
+    desc:"Photo longue exposition"
+  }
+];
+
+function render() {
+  const g = document.getElementById("gallery");
+  g.innerHTML = "";
+
+  photos.forEach((p, i) => {
+    g.innerHTML += `
+    <div class="card">
+      <img src="${p.img}">
+      <h3>${p.name}</h3>
+      <p>${p.desc}</p>
+      <p class="price">${p.price}</p>
+
+      <a href="https://paypal.me/" target="_blank">
+        <button>💰 Acheter</button>
+      </a>
+
+      ${isAdmin ? `<button onclick="del(${i})">❌ Supprimer</button>` : ""}
+    </div>`;
+  });
+
+  localStorage.setItem("photos", JSON.stringify(photos));
+}
+
+function login() {
+  let pass = prompt("Mot de passe admin ?");
+  if(pass === ADMIN_PASS) {
     isAdmin = true;
     document.getElementById("adminPanel").style.display = "block";
-    alert("Mode admin activé !");
+    alert("Admin activé");
+    render();
   } else {
-    alert("Mot de passe incorrect");
+    alert("Incorrect");
   }
 }
 
-// 💰 EDIT PRIX
-function editPrice(el) {
-  if(!isAdmin) {
-    alert("Active le mode admin d'abord !");
-    return;
-  }
+function addPhoto() {
+  let name = document.getElementById("name").value;
+  let img = document.getElementById("img").value;
+  let price = document.getElementById("price").value;
+  let desc = document.getElementById("desc").value;
 
-  let newPrice = prompt("Nouveau prix ?");
-  if(newPrice) {
-    el.innerText = newPrice;
-    localStorage.setItem("price_" + el.innerText, newPrice);
-  }
+  photos.push({name,img,price,desc});
+  render();
 }
+
+function del(i) {
+  photos.splice(i,1);
+  render();
+}
+
+render();
 
 </script>
 
