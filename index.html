@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <title>beezeedeepsky - Astro Shop</title>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
 <style>
 body {
   margin:0;
@@ -12,13 +16,17 @@ body {
   color:white;
 }
 
+/* HEADER */
 header {
   text-align:center;
   padding:40px;
 }
 
-h1 { font-size:50px; }
+h1 {
+  font-size:50px;
+}
 
+/* SOCIAL */
 .socials {
   display:flex;
   overflow-x:auto;
@@ -27,14 +35,39 @@ h1 { font-size:50px; }
 }
 
 .social {
+  flex:0 0 auto;
   background:#111;
   padding:10px 15px;
   border-radius:8px;
-  color:white;
   text-decoration:none;
-  flex:0 0 auto;
+  color:white;
 }
 
+/* ADMIN */
+.admin {
+  text-align:center;
+  margin:10px;
+}
+
+#adminPanel {
+  display:none;
+  text-align:center;
+  background:#111;
+  padding:20px;
+  margin:10px;
+  border-radius:10px;
+}
+
+input, textarea {
+  width:80%;
+  max-width:400px;
+  padding:8px;
+  margin:5px;
+  border-radius:8px;
+  border:none;
+}
+
+/* GALLERY */
 .gallery {
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -60,71 +93,59 @@ h1 { font-size:50px; }
 
 button {
   padding:8px 12px;
-  margin:5px;
+  margin-top:5px;
+  background:#00ffcc;
   border:none;
   border-radius:6px;
   cursor:pointer;
-}
-
-.adminPanel {
-  display:none;
-  background:#111;
-  padding:20px;
-  text-align:center;
-}
-
-input, textarea {
-  padding:8px;
-  margin:5px;
-  width:80%;
-  max-width:400px;
 }
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
 <header>
 <h1>🌌 beezeedeepsky</h1>
-<p>Astrophotographie - vente de photos d’espace</p>
+<p>Astrophotographie - vente de photos d’univers</p>
 </header>
 
-<!-- RÉSEAUX -->
+<!-- SOCIALS -->
 <div class="socials">
 <a class="social" href="https://www.youtube.com/@MoonlightShutter" target="_blank">▶ YouTube</a>
 <a class="social" href="#">📸 Instagram</a>
 <a class="social" href="#">🎵 TikTok</a>
 </div>
 
-<!-- ADMIN -->
-<div style="text-align:center;">
-<button onclick="login()">🔐 Admin</button>
+<!-- ADMIN BUTTON -->
+<div class="admin">
+<button onclick="login()">🔐 Mode Admin</button>
 </div>
 
-<div class="adminPanel" id="adminPanel">
+<!-- ADMIN PANEL -->
+<div id="adminPanel">
+<h3>Ajouter une photo</h3>
 
-<h3>Mode Admin</h3>
-
-<input id="name" placeholder="Nom photo"><br>
-<input id="img" placeholder="URL image"><br>
+<input id="name" placeholder="Nom"><br>
 <input id="price" placeholder="Prix"><br>
 <textarea id="desc" placeholder="Description"></textarea><br>
+<input id="img" placeholder="URL image"><br>
 
-<button onclick="addPhoto()">Ajouter photo</button>
+<button onclick="addProduct()">Ajouter</button>
 </div>
 
 <!-- GALLERY -->
-<section class="gallery" id="gallery"></section>
+<div class="gallery" id="gallery"></div>
 
 <!-- CONTACT -->
-<section style="text-align:center; padding:30px; background:#0a0a0a;">
+<section style="text-align:center; padding:40px; background:#0a0a0a;">
 <h2>📩 Contact</h2>
 
 <form action="https://formspree.io/f/mwkgbqyz" method="POST">
 <input name="name" placeholder="Nom" required><br>
 <input name="email" placeholder="Email" required><br>
 <textarea name="message" placeholder="Message" required></textarea><br>
-<button>Envoyer</button>
+<button type="submit">Envoyer</button>
 </form>
 
 <p>📧 nolanpoulainpro@gmail.com</p>
@@ -132,69 +153,66 @@ input, textarea {
 
 <script>
 
-const ADMIN_PASS = "astro2026";
+/* 🔥 FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyCRRoKAH05jvqlGVgWloPTaOY8XdvX4dqA",
+  authDomain: "beezeedeepsky-shop.firebaseapp.com",
+  projectId: "beezeedeepsky-shop",
+  storageBucket: "beezeedeepsky-shop.firebasestorage.app",
+  messagingSenderId: "705714367098",
+  appId: "1:705714367098:web:8053abb7dc04109e40e9c3"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 let isAdmin = false;
 
-let photos = JSON.parse(localStorage.getItem("photos")) || [
-  {
-    name:"Nébuleuse Orion",
-    img:"https://via.placeholder.com/400x300",
-    price:"10€",
-    desc:"Photo longue exposition"
-  }
-];
-
-function render() {
-  const g = document.getElementById("gallery");
-  g.innerHTML = "";
-
-  photos.forEach((p, i) => {
-    g.innerHTML += `
-    <div class="card">
-      <img src="${p.img}">
-      <h3>${p.name}</h3>
-      <p>${p.desc}</p>
-      <p class="price">${p.price}</p>
-
-      <a href="https://paypal.me/" target="_blank">
-        <button>💰 Acheter</button>
-      </a>
-
-      ${isAdmin ? `<button onclick="del(${i})">❌ Supprimer</button>` : ""}
-    </div>`;
-  });
-
-  localStorage.setItem("photos", JSON.stringify(photos));
-}
-
+/* 🔐 LOGIN ADMIN */
 function login() {
-  let pass = prompt("Mot de passe admin ?");
-  if(pass === ADMIN_PASS) {
+  const pass = prompt("Mot de passe admin ?");
+  if(pass === "astro2026") {
     isAdmin = true;
     document.getElementById("adminPanel").style.display = "block";
-    alert("Admin activé");
-    render();
+    alert("Mode admin activé");
   } else {
     alert("Incorrect");
   }
 }
 
-function addPhoto() {
-  let name = document.getElementById("name").value;
-  let img = document.getElementById("img").value;
-  let price = document.getElementById("price").value;
-  let desc = document.getElementById("desc").value;
+/* ➕ AJOUT PRODUIT */
+function addProduct() {
+  db.collection("photos").add({
+    name: document.getElementById("name").value,
+    price: document.getElementById("price").value,
+    desc: document.getElementById("desc").value,
+    img: document.getElementById("img").value
+  });
 
-  photos.push({name,img,price,desc});
-  render();
+  alert("Photo ajoutée !");
 }
 
-function del(i) {
-  photos.splice(i,1);
-  render();
-}
+/* 📸 AFFICHAGE AUTOMATIQUE */
+db.collection("photos").onSnapshot((snap) => {
+  let html = "";
 
-render();
+  snap.forEach(doc => {
+    let p = doc.data();
+
+    html += `
+      <div class="card">
+        <img src="${p.img}">
+        <h3>${p.name}</h3>
+        <p>${p.desc}</p>
+        <p class="price">${p.price}</p>
+
+        <button onclick="alert('Paiement à connecter')">💰 Acheter</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("gallery").innerHTML = html;
+});
 
 </script>
 
