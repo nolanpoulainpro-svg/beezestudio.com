@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>beezeedeepsky Astro Shop</title>
+<title>Astro Shop</title>
 
 <style>
 body{
@@ -13,7 +13,7 @@ color:white;
 overflow-x:hidden;
 }
 
-/* 🌌 STARS */
+/* STARS */
 .stars{
 position:fixed;
 width:100%;
@@ -37,26 +37,9 @@ from{transform:translateY(-10vh);}
 to{transform:translateY(110vh);}
 }
 
-/* HEADER */
+/* UI */
 header{text-align:center;padding:30px;}
 
-/* SOCIAL */
-.socials{
-display:flex;
-gap:10px;
-overflow-x:auto;
-padding:10px;
-}
-
-.social{
-background:#111;
-padding:10px 15px;
-border-radius:8px;
-color:white;
-text-decoration:none;
-}
-
-/* GALLERY */
 .gallery{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -84,7 +67,6 @@ cursor:pointer;
 margin-top:5px;
 }
 
-/* CART */
 .cart{
 position:fixed;
 right:10px;
@@ -93,23 +75,6 @@ background:#111;
 padding:10px;
 border-radius:10px;
 width:240px;
-max-height:400px;
-overflow:auto;
-}
-
-/* ADMIN */
-#adminPanel{
-display:none;
-background:#111;
-padding:10px;
-margin:10px;
-border-radius:10px;
-}
-
-input,textarea{
-width:80%;
-padding:8px;
-margin:5px;
 }
 </style>
 </head>
@@ -119,14 +84,8 @@ margin:5px;
 <div class="stars" id="stars"></div>
 
 <header>
-<h1>🌌 beezeedeepsky</h1>
-<p>Astrophotographie Shop</p>
+<h1>🌌 Astro Shop</h1>
 </header>
-
-<!-- SOCIAL -->
-<div class="socials">
-<a class="social" href="https://www.youtube.com/@MoonlightShutter" target="_blank">▶ YouTube</a>
-</div>
 
 <!-- CART -->
 <div class="cart">
@@ -134,34 +93,31 @@ margin:5px;
 <div id="cart"></div>
 <p>Total : <span id="total">0</span>€</p>
 
-<button id="clearCart">🗑 Vider panier</button>
+<button onclick="clearCart()">Vider</button>
 
-<a id="paypalLink" href="https://www.paypal.me/NolanPoulain0" target="_blank">
-<button>💳 PayPal</button>
+<a id="paypal" href="https://www.paypal.me/NolanPoulain0" target="_blank">
+<button>Payer PayPal</button>
 </a>
 </div>
 
-<!-- ADMIN -->
-<button id="adminBtn">🔐 Admin</button>
+<button onclick="login()">Admin</button>
 
-<div id="adminPanel">
-
-<h3>Ajouter une photo</h3>
+<div id="adminPanel" style="display:none">
+<h3>Ajouter photo</h3>
 
 <input id="name" placeholder="Nom"><br>
 <input id="price" placeholder="Prix"><br>
 <textarea id="desc" placeholder="Description"></textarea><br>
 <input type="file" id="file"><br>
 
-<button id="addPhotoBtn">Ajouter</button>
-
+<button onclick="addPhoto()">Ajouter</button>
 </div>
 
 <div class="gallery" id="gallery"></div>
 
 <script>
 
-/* 🌌 STARS */
+/* STARS */
 for(let i=0;i<120;i++){
 let s=document.createElement("div");
 s.className="star";
@@ -176,28 +132,28 @@ let photos = JSON.parse(localStorage.getItem("photos")) || [];
 let cart = [];
 let isAdmin = false;
 
-/* ADMIN LOGIN */
-document.getElementById("adminBtn").addEventListener("click",()=>{
-let p = prompt("Mot de passe ?");
+/* LOGIN */
+function login(){
+let p = prompt("Mot de passe");
 if(p==="astro2026"){
 isAdmin=true;
 document.getElementById("adminPanel").style.display="block";
 render();
 }
-});
+}
 
 /* ADD PHOTO */
-document.getElementById("addPhotoBtn").addEventListener("click",()=>{
+function addPhoto(){
 
 let file=document.getElementById("file").files[0];
-if(!file) return alert("Ajoute une image");
+if(!file) return alert("Image manquante");
 
 let reader=new FileReader();
 
 reader.onload=function(e){
 
 photos.push({
-id:crypto.randomUUID(),
+id:Date.now(),
 name:document.getElementById("name").value,
 price:parseFloat(document.getElementById("price").value),
 desc:document.getElementById("desc").value,
@@ -209,38 +165,37 @@ render();
 };
 
 reader.readAsDataURL(file);
-});
+}
 
 /* SAVE */
 function save(){
 localStorage.setItem("photos",JSON.stringify(photos));
 }
 
-/* 🗑 DELETE PHOTO (100% FIXED) */
+/* DELETE PHOTO (FIX DEFINITIF) */
 function deletePhoto(id){
 photos = photos.filter(p => p.id !== id);
 save();
 render();
 }
 
-/* ADD CART */
+/* ADD CART (ONLY ID) */
 function addCart(id){
-let item = photos.find(p=>p.id===id);
-cart.push(item);
+cart.push(id);
 renderCart();
 }
 
 /* REMOVE CART */
-function removeCart(index){
-cart.splice(index,1);
+function removeCart(i){
+cart.splice(i,1);
 renderCart();
 }
 
-/* CLEAR CART */
-document.getElementById("clearCart").addEventListener("click",()=>{
+/* CLEAR */
+function clearCart(){
 cart=[];
 renderCart();
-});
+}
 
 /* RENDER */
 function render(){
@@ -250,10 +205,10 @@ g.innerHTML="";
 
 photos.forEach(p=>{
 
-let card=document.createElement("div");
-card.className="card";
+let div=document.createElement("div");
+div.className="card";
 
-card.innerHTML=`
+div.innerHTML=`
 <img src="${p.img}">
 <h3>${p.name}</h3>
 <p>${p.desc}</p>
@@ -261,46 +216,50 @@ card.innerHTML=`
 <button class="add">🛒 Ajouter</button>
 `;
 
-card.querySelector(".add").addEventListener("click",()=>addCart(p.id));
+div.querySelector(".add").onclick=()=>addCart(p.id);
 
-/* 🔐 ADMIN DELETE BUTTON (FIXED) */
+/* ADMIN DELETE */
 if(isAdmin){
 let del=document.createElement("button");
 del.textContent="❌ Supprimer";
-del.addEventListener("click",()=>deletePhoto(p.id));
-card.appendChild(del);
+del.onclick=()=>deletePhoto(p.id);
+div.appendChild(del);
 }
 
-g.appendChild(card);
+g.appendChild(div);
 });
 
 renderCart();
 }
 
-/* CART */
+/* CART RENDER (FIX NOMS) */
 function renderCart(){
 
 let c=document.getElementById("cart");
 c.innerHTML="";
 let total=0;
 
-cart.forEach((p,i)=>{
+cart.forEach((id,i)=>{
+
+let p = photos.find(x=>x.id===id);
+if(!p) return;
+
 c.innerHTML+=`
 <p>${p.name} - ${p.price}€
 <button onclick="removeCart(${i})">❌</button>
 </p>
 `;
-total+=p.price;
+
+total += p.price;
 });
 
 document.getElementById("total").innerText=total;
 
 /* PAYPAL */
-document.getElementById("paypalLink").href =
+document.getElementById("paypal").href =
 "https://www.paypal.me/NolanPoulain0/" + total;
 }
 
-/* INIT */
 render();
 
 </script>
